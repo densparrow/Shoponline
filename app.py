@@ -7,10 +7,10 @@ db = SQLAlchemy
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column()
-    price = db.Column()
-    category = db.Column()
-    isActive = db.Column()
+    title = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    isActive = db.Column(db.Boolean, default=True)
 
 @app.route('/')
 def index():
