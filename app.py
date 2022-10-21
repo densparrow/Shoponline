@@ -15,11 +15,11 @@ class Item(db.Model):
     isActive = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
-        return self.title
+        return self.id
 
 @app.route('/')
 def index():
-    items = Item.query.order_by(Item.price).all()
+    items = Item.query.all()
 
     return render_template('index.html', data=items)
 
