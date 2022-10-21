@@ -14,9 +14,14 @@ class Item(db.Model):
     text = db.Column(db.Text, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
 
+    def __repr__(self):
+        return self.title
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    items = Item.query.order_by(Item.price).all()
+
+    return render_template('index.html', data=items)
 
 @app.route('/about')
 def about():
