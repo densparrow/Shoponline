@@ -1,10 +1,22 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from cloudipsp import Api, Checkout
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+
+# api = Api(merchant_id=1396424,
+#           secret_key='test')
+# checkout = Checkout(api=api)
+# data = {
+#     "currency": "USD",
+#     "amount": 10000
+# }
+# url = checkout.url(data).get('checkout_url')
+
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,19 +29,38 @@ class Item(db.Model):
     def __repr__(self):
         return self.id
 
+
 @app.route('/')
 def index():
     items = Item.query.all()
 
     return render_template('index.html', data=items)
 
+
 @app.route('/about')
 def about():
     return render_template('about.html')
 
+
+@app.route('/buy/<int:id>')
+def item_buy(id):
+    item = Item.query.get(id)
+
+    api = Api(merchant_id=1396424,
+              secret_key='test')
+    checkout = Checkout(api=api)
+    data = {
+        "currency": "USD",
+        "amount": str(item.price) + "00"
+    }
+    url = checkout.url(data).get('checkout_url')
+    return redirect(url)
+
+
 @app.route('/home')
 def home():
     return render_template('home.html')
+
 
 @app.route('/create', methods=['POST', 'GET'])
 def create():
@@ -39,7 +70,7 @@ def create():
         category = request.form['category']
         text = request.form['text']
 
-        item = Item(title=title, price=price, category= category, text=text)
+        item = Item(title=title, price=price, category=category, text=text)
 
         try:
             db.session.add(item)
