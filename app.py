@@ -41,6 +41,9 @@ def index():
 def about():
     return render_template('about.html')
 
+@app.route('/certificate')
+def certificate():
+    return render_template('certificate.html')
 
 @app.route('/buy/<int:id>')
 def item_buy(id):
